@@ -1,23 +1,3 @@
-// Pesapal Integration Guide
-// This is the easiest way to accept M-Pesa payments
-
-/*
-PESAPAL SETUP STEPS:
-
-1. Go to https://pesapal.com
-2. Create business account
-3. Get your API credentials:
-   - Consumer Key
-   - Consumer Secret
-   - IPN URL (callback URL)
-
-4. Set callback URL in Pesapal dashboard:
-   - If on Vercel: https://your-domain.vercel.app/api/pesapal/callback
-   - Pesapal will send payment confirmation here
-
-5. Keep credentials in environment variables (never hardcode)
-*/
-
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
@@ -26,27 +6,39 @@ const cors = require('cors');
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-// Enable CORS - allow requests from Vercel frontend
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Enable CORS
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'http://localhost:5000',
-        'http://127.0.0.1:3000',
-        'https://prompt-xxxxx.vercel.app', // Your Vercel domain
-        'https://*.vercel.app' // Any Vercel app
-    ],
+    origin: '*',
     credentials: true
 }));
+
+// Logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
 
 // Pesapal credentials from environment variables
 const PESAPAL_CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY;
 const PESAPAL_CONSUMER_SECRET = process.env.PESAPAL_CONSUMER_SECRET;
 const PESAPAL_API_URL = 'https://pay.pesapal.com/api'; // Production
-// const PESAPAL_API_URL = 'https://demo.pesapal.com/api'; // Sandbox
+const CALLBACK_URL = process.env.CALLBACK_URL;
 
-const CALLBACK_URL = process.env.CALLBACK_URL || 'https://your-domain.vercel.app/api/pesapal/callback';
+// Validate environment variables on startup
+if (!PESAPAL_CONSUMER_KEY || !PESAPAL_CONSUMER_SECRET) {
+    console.warn('⚠️  WARNING: Pesapal credentials not set in environment variables');
+    console.warn('Set PESAPAL_CONSUMER_KEY and PESAPAL_CONSUMER_SECRET');
+}
+
+if (!CALLBACK_URL) {
+    console.warn('⚠️  WARNING: CALLBACK_URL not set in environment variables');
+}
 
 // Get Pesapal auth token
 async function getPesapalToken() {
@@ -187,15 +179,76 @@ app.post('/api/pesapal/callback', (req, res) => {
     }
 });
 
-// Health check
+// Health check endpoint
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok' });
+    res.json({ 
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'production'
+    });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Callback URL: ${CALLBACK_URL}`);
+// Root endpoint
+app.get('/', (req, res) => {
+    res.json({ 
+        message: 'Pesapal Payment Backend',
+        version: '1.0.0',
+        endpoints: [
+            'POST /api/pesapal/initiate',
+            'POST /api/pesapal/callback',
+            'GET /api/health'
+        ]
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        success: false,
+        error: err.message || 'Internal server error'
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        error: 'Endpoint not found',
+        path: req.path
+    });
+});
+
+// Start server
+const server = app.listen(PORT, () => {
+    console.log('════════════════════════════════════════');
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🌐 URL: http://localhost:${PORT}`);
+    console.log('════════════════════════════════════════');
+    console.log(`📍 Health: http://localhost:${PORT}/api/health`);
+    console.log(`📍 Callback: http://localhost:${PORT}/api/pesapal/callback`);
+    console.log('════════════════════════════════════════');
+    
+    if (CALLBACK_URL) {
+        console.log(`✅ CALLBACK_URL configured: ${CALLBACK_URL}`);
+    } else {
+        console.warn('⚠️  CALLBACK_URL not configured');
+    }
+    
+    if (PESAPAL_CONSUMER_KEY && PESAPAL_CONSUMER_SECRET) {
+        console.log('✅ Pesapal credentials configured');
+    } else {
+        console.warn('⚠️  Pesapal credentials NOT configured');
+    }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });
 
 module.exports = app;
