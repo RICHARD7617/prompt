@@ -1,10 +1,5 @@
 {
-  "name": "support-his-excellency",
   "version": 2,
-  "public": true,
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "framework": "static",
   "rewrites": [
     {
       "source": "/(.*)",
