@@ -30,23 +30,23 @@
 
                 <form id="paymentForm" class="form">
                     <div class="form-group">
-                        <label for="mpesaPin">Enter Your M-Pesa PIN</label>
+                        <label for="mpesaPhone">Your M-Pesa Phone Number</label>
                         <input 
-                            type="password" 
-                            id="mpesaPin" 
-                            name="mpesaPin" 
-                            placeholder="••••"
-                            maxlength="4"
-                            inputmode="numeric"
-                            pattern="[0-9]{4}"
+                            type="tel" 
+                            id="mpesaPhone" 
+                            name="mpesaPhone" 
+                            placeholder="254712345678"
+                            pattern="^254[0-9]{9}$"
                             required
                             autofocus
                         >
-                        <small class="pin-hint">4-digit PIN required</small>
+                        <small class="pin-hint">Format: 254XXXXXXXXX (no + or spaces)</small>
                     </div>
 
                     <div class="phone-hint">
-                        <p>A prompt will appear on your M-Pesa registered phone</p>
+                        <p>✓ You will receive an STK popup on your phone</p>
+                        <p>✓ Enter your M-Pesa PIN in the official popup</p>
+                        <p>✓ Complete your payment securely</p>
                     </div>
 
                     <button type="submit" class="btn-primary">
