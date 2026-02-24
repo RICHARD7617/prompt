@@ -1,0 +1,25 @@
+{
+  "name": "support-his-excellency",
+  "version": 1,
+  "public": true,
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": "static",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

