@@ -2,16 +2,12 @@
   "name": "support-his-excellency",
   "version": "1.0.0",
   "description": "M-Pesa payment portal for KSH 30 donation",
-  "main": "index.html",
-  "scripts": {
-    "start": "open index.html"
-  },
   "keywords": [
     "m-pesa",
     "payment",
     "donation"
   ],
-  "author": "Your Name",
+  "author": "Richard Omondi",
   "license": "MIT",
   "engines": {
     "node": "18.x"
